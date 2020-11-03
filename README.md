@@ -15,14 +15,14 @@ This is a simple core of **Inventory System** for any game.
   {
       if (item.icon == null)
       {
-          this.icon.enabled = false;
+          icon.enabled = false;
       }
       else
       {
-          this.icon.enabled = true;
+          icon.enabled = true;
       }
 
-      this.icon.texture = item.icon;
+      icon.texture = item.icon;
 
       if (count > 1)
       {
