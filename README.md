@@ -7,13 +7,13 @@ This is a simple core of **Inventory System** for any game.
 1. Import unitypackage
 2. Create some script
   - **That should inherit _SlotViewComponent_ script**
-  - **Implemet void _UpdateSlotView(Texture 2D, int count)_**
+  - **Implemet void _UpdateSlotView(Item item, int count)_**
   - Here you can write how your component should update it self view
   - Example: 
   ```
-  public override void UpdateSlotView(Texture2D icon, int count)
+  public override void UpdateSlotView(Item item, int count)
   {
-      if (icon == null)
+      if (item.icon == null)
       {
           this.icon.enabled = false;
       }
@@ -22,7 +22,7 @@ This is a simple core of **Inventory System** for any game.
           this.icon.enabled = true;
       }
 
-      this.icon.texture = icon;
+      this.icon.texture = item.icon;
 
       if (count > 1)
       {
