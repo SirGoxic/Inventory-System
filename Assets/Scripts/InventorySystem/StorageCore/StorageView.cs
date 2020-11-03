@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using InventorySystem.ItemCore;
 using InventorySystem.SlotCore;
 using UnityEngine;
 
@@ -9,11 +10,11 @@ namespace InventorySystem.StorageCore
 
         protected List<SlotViewComponent> slotViews = new List<SlotViewComponent>();
 
-        public abstract void CreateView();
+        public abstract void CreateView(int slotsCount);
 
-        public void UpdateSlotView(int index, Texture2D icon, int count)
+        public void UpdateSlotView(int index, Item item, int count)
         {
-            slotViews[index].UpdateSlotView(icon, count);
+            slotViews[index].UpdateSlotView(item, count);
         }
     }
 }

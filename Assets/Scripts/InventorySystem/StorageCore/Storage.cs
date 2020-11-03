@@ -7,6 +7,7 @@ namespace InventorySystem.StorageCore
 {
     public class Storage : MonoBehaviour
     {
+        [HideInInspector]
         public Slot[] slots;
         private List<int> emptySlots = new List<int>();
 
@@ -24,9 +25,10 @@ namespace InventorySystem.StorageCore
         {
             slots[index].ClearSlot();
             emptySlots.Add(index);
+            emptySlots.Sort();
         }
 
-        public bool TryToAddItem(Item item, int count, ref int slotIndex)
+        public bool TryToAddItem(Item item, int count)
         {
             int index = -1;
 
@@ -43,8 +45,7 @@ namespace InventorySystem.StorageCore
                     }
                     else
                     {
-                        slotIndex = index;
-                        
+
                         return false;
                     }
                     
@@ -52,7 +53,6 @@ namespace InventorySystem.StorageCore
 
                     slots[index].AddItem(item, count);
                     
-                    slotIndex = index;
                     
                     return true;
                 }
@@ -60,8 +60,7 @@ namespace InventorySystem.StorageCore
                 {
                     //Just add item
                     slots[index].AddItem(item, count);
-
-                    slotIndex = index;
+                    
                     
                     return true;
                 }
@@ -80,77 +79,119 @@ namespace InventorySystem.StorageCore
                     }
                     else
                     {
-                        slotIndex = index;
-                        
+
                         return false;
                     }
                 }
-                
-                slotIndex = index;
-                
+
                 return true;
             }
         }
-
-        public bool TryToRemoveItem(Item item, int count)
+        
+        public bool TryToAddItemInSlot(Item item, int count, int slotIndex)
         {
-            if (count > 0)
+            if (item.stackable)
             {
-
-                int index = FindAtItem(item);
-
-                if (index != -1)
+                //If neither of slots, does not contain current item
+                if (slots[slotIndex].GetItem() == item)
                 {
-
-                    if (count == 1)
-                    {
-                        slots[index].DicreaseCount();
-                    }
-                    else
-                    {
-                        slots[index].DicreaseCount(count);
-                    }
-
-                    if (slots[index].IsEmpty())
-                    {
-                        emptySlots.Add(index);
-                    }
+                    slots[slotIndex].AddItem(item, count);
 
                     return true;
                 }
+                else
+                {
+                    return false;
+                }
             }
+            else
+            {
+                if (slots[slotIndex].IsEmpty())
+                {
+                    slots[slotIndex].AddItem(item, 1);
 
-            return false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
-        public bool TryToRemoveItem(int id, int count)
+        public bool TryToRemoveItem(Item item, int count, ref int restCount)
         {
             if (count > 0)
             {
 
-                int index = FindAtItem(id);
-
-                if (index != -1)
+                if (item.stackable)
                 {
-
-                    if (count == 1)
-                    {
-                        slots[index].DicreaseCount();
-                    }
-                    else
-                    {
-                        slots[index].DicreaseCount(count);
-                    }
+                    int index = -1;
                     
-                    if (slots[index].IsEmpty())
+                    while (count > 0)
                     {
-                        emptySlots.Add(index);
-                    }
+                        index = FindAtItem(item);
+                        if (index != -1)
+                        {
 
+                            int tempCount = slots[index].GetItemCount();
+                            
+                            slots[index].DicreaseCount(count);
+
+                            count -= tempCount;
+
+                            if (count < 0)
+                            {
+                                count = 0;
+                            }
+                            
+                            if (slots[index].IsEmpty())
+                            {
+                                emptySlots.Add(index);
+                                emptySlots.Sort();
+                            }
+                        }
+                        else
+                        {
+                            restCount = count;
+                            return false;
+                        }
+                    }
+                    restCount = count;
                     return true;
                 }
-            }
+                else
+                {
+                    int index = -1;
+                    
+                    while (count > 0)
+                    {
+                        index = FindAtItem(item);
+                        if (index != -1)
+                        {
 
+                            slots[index].DicreaseCount();
+
+                            count--;
+                            
+                            if (slots[index].IsEmpty())
+                            {
+                                emptySlots.Add(index);
+                                emptySlots.Sort();
+                            }
+                        }
+                        else
+                        {
+                            restCount = count;
+                            return false;
+                        }
+                    }
+                    restCount = count;
+                    return true;
+                }
+
+            }
+            restCount = count;
             return false;
         }
 
@@ -159,19 +200,6 @@ namespace InventorySystem.StorageCore
             for (int i = 0; i < slots.Length; i++)
             {
                 if (slots[i].GetItem() == item)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        public int FindAtItem(int id)
-        {
-            for (int i = 0; i < slots.Length; i++)
-            {
-                if (slots[i].GetItem().id == id)
                 {
                     return i;
                 }
@@ -198,12 +226,14 @@ namespace InventorySystem.StorageCore
             if (emptySlots.Contains(slotIndex))
             {
                 emptySlots.Remove(slotIndex);
-                emptySlots.Add(slotIndexNew);
+                emptySlots.Add(slotIndex);
+                emptySlots.Sort();
             }
             else if (emptySlots.Contains(slotIndexNew))
             {
                 emptySlots.Remove(slotIndexNew);
                 emptySlots.Add(slotIndex);
+                emptySlots.Sort();
             }
 
             Slot tempSlot = slots[slotIndex];

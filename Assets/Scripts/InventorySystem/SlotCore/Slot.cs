@@ -16,7 +16,7 @@ namespace InventorySystem.SlotCore
 
         public void AddItem(Item item, int itemCount)
         {
-            if (this.item == item)
+            if (this.item == item && !IsEmpty())
             {
                 this.itemCount += itemCount;
             }
@@ -29,7 +29,7 @@ namespace InventorySystem.SlotCore
         
         public void AddItem(Item item)
         {
-            if (this.item == item)
+            if (this.item == item && !IsEmpty())
             {
                 this.itemCount += 1;
             }
@@ -69,6 +69,12 @@ namespace InventorySystem.SlotCore
         public int DicreaseCount(int amount)
         {
             itemCount -= amount;
+            
+            if (itemCount < 0)
+            {
+                itemCount = 0;
+            }
+            
             if (itemCount == 0)
             {
                 item = null;

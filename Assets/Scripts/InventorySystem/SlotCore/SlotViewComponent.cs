@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using InventorySystem.ItemCore;
+using UnityEngine;
 
 namespace InventorySystem.SlotCore
 {
@@ -6,6 +7,6 @@ namespace InventorySystem.SlotCore
     public abstract class SlotViewComponent : MonoBehaviour
     {
 
-        public abstract void UpdateSlotView(Texture2D icon, int count);
+        public abstract void UpdateSlotView(Item item, int count);
     }
 }
