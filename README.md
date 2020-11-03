@@ -13,6 +13,14 @@ This is a simple core of **Inventory System** for any game.
   ```
   public override void UpdateSlotView(Item item, int count)
   {
+      if (item == null)
+      {
+          icon.enabled = false;
+          this.count.gameObject.SetActive(false);
+          this.count.text = "";
+          return;
+      }
+        
       if (item.icon == null)
       {
           icon.enabled = false;
@@ -38,17 +46,17 @@ This is a simple core of **Inventory System** for any game.
   ```
 3. Create another script
   - **That should inherit _StorageView_ script**
-  - **Implemet void _CreateView()_**
+  - **Implemet void _CreateView(int slotsCount)_**
   - Here you can write how your view is creating
   - Example:
   ```
-  public override void CreateView()
+  public override void CreateView(int slotsCount)
   {
   //slotParent - is a UI panel which contain Grid Layout Group component
   //slotViews - is a list of all SlotViewComponents which linked with slot's list index by index
       for(int i = 0; i < slotsCount; i++){
           GameObject tempGO = (GameObject) Instantiate(slotPref, Vector3.zero, Quaternion.identity, slotParent);
-          SlotViewComponent svc = tempGO.GetComponent<InventoryViewComponent>();
+          SlotViewComponent svc = tempGO.GetComponent<InventorySlotViewComponent>();
           slotViews.Add(svc);
       }
   }
@@ -64,10 +72,13 @@ This is a simple core of **Inventory System** for any game.
   - Setup your StorageView
 7. Thats all, you can use it.
   
+  
 ## Warning
 **You should manage storage via _StorageController_ to avoid mistakes!**
   
   
+## TODO
+A lot of things...
   
   
   
